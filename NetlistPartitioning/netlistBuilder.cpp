@@ -1,5 +1,6 @@
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include "netlistBuilder.h"
 
 int get_component_count(std::string path) {
@@ -55,7 +56,6 @@ std::string get_nets(std::string path) {
 	while (str != "(net") {		//Move to first net
 		file >> str;
 	}
-
 	while (file >> str) {		//Read nets
 		if (str == "(ref") {
 			file >> str;
@@ -71,10 +71,24 @@ std::string get_nets(std::string path) {
 	return nets;
 }
 
-void set_array_zero(double* array, int size) {
+void set_array_const(double* array, int size, double c) {
 	for (int i = 0; i < size; i++) {
-		array[i] = 0;
+		array[i] = c;
 	}
+}
+
+bool line_contains_component(std::string line, std::string comp) {
+	int pos = line.find(comp);
+	if (pos != std::string::npos) {
+		std::istringstream line_stream(line);
+		std::string str;
+		while (line_stream >> str) {
+			if (str == comp) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 void build_graph_from_netlist(std::string path, Spin* spins, int spin_count) {
@@ -89,12 +103,12 @@ void build_graph_from_netlist(std::string path, Spin* spins, int spin_count) {
 
 	for (int i = 0; i < spin_count; i++) {							//For every spin...
 		double* weights = new double[spin_count];
-		set_array_zero(weights, spin_count);
+		set_array_const(weights, spin_count, 0);
 		std::istringstream nets_stream(nets);
 		std::string line;
 		for (int j = 0; j < net_count; j++) {						//...check every net...
 			std::getline(nets_stream, line);
-			if (line.find(spins[i].name) != std::string::npos) {	//...if that net contains the spin...
+			if (line_contains_component(line, spins[i].name)) {	//...if that net contains the spin...
 				std::istringstream line_stream(line);
 				std::string token;
 				while (line_stream >> token) {						//...cycle through the net...
