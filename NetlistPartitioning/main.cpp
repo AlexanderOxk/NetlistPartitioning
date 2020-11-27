@@ -2,6 +2,10 @@
 #include "Spin.h"
 #include "netlistBuilder.h"
 
+inline double randf() {
+	return (double)rand() / RAND_MAX;
+}
+
 void clean_spins(Spin* spins, int spin_count) {
 	for (int i = 0; i < spin_count; i++) {
 		delete[] spins[i].weights;
@@ -15,16 +19,14 @@ void anneal(
 	double temperature,
 	double cooling_speed,
 	double stop_temp,
-	int steps_per_temp,
-	double edge_penalty,
-	double ineq_penalty
+	int steps_per_temp
 ) {
 	std::cout << "Goal temp: " << stop_temp << "\n";
 
 	while (temperature > stop_temp) {
 		for (int i = 0; i < steps_per_temp; i++) {
 			for (int j = 0; j < spin_count; j++) {
-				spins[j].next_state(temperature, edge_penalty, ineq_penalty);
+				spins[j].next_state(randf() < temperature);
 				spins[j].flip();
 			}
 		}
@@ -40,14 +42,12 @@ int main() {
 	Spin* spins = new Spin[spin_count];
 
 	double temperature = 0.8;
-	double cooling_speed = 0.001;
-	double stop_temp = 0.00001;
-	int steps_per_temp = 50;
-	double edge_penalty = 1;
-	double ineq_penalty = 2;
+	double cooling_speed = 0.01;
+	double stop_temp = 0.001;
+	int steps_per_temp = 10;
 
-	build_graph_from_netlist(path, spins, spin_count);
-	anneal(spins, spin_count, temperature, cooling_speed, stop_temp, steps_per_temp, edge_penalty, ineq_penalty);
+	build_graph_from_netlist(path, spins, spin_count, 1, 2);
+	anneal(spins, spin_count, temperature, cooling_speed, stop_temp, steps_per_temp);
 	
 	for (int i = 0; i < spin_count; i++) {
 		std::cout << spins[i].name + " " << spins[i].spin << "\n";

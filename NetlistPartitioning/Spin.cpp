@@ -20,30 +20,19 @@ void Spin::randomize() {
     spin = randf() > 0.5 ? -1 : 1;
 }
 
-double Spin::energy_adjacent(int sign, double edge_penalty, double ineq_penalty) {
-    double edge_energy = 0;
-    double ineq_energy = 0;
+double Spin::energy_adjacent() {
+    double total = 0;
     for (int i = 0; i < neighbours; i++) {
-        edge_energy += 1 - sign * spin * adjacent[i].spin * weights[i];
-        ineq_energy += adjacent[i].spin;
+        total += adjacent[i].spin * weights[i];
     }
-    if (sign == -1) {
-        ineq_energy += spin == 1 ? -2 : 2;
-    }
-    ineq_energy = ineq_penalty * abs(ineq_energy);
-    edge_energy *= edge_penalty;
-    return edge_energy + ineq_energy;
+    return total;
 }
 
 void Spin::flip() {
     spin = next_spin;
 }
 
-void Spin::next_state(double temperature, double edge_penalty, double ineq_penalty) {
-    if (energy_adjacent(-1, edge_penalty, ineq_penalty) < energy_adjacent(1, edge_penalty, ineq_penalty)) {
-        next_spin = -spin;
-    }
-    else if (randf() < temperature) {
-        next_spin = -spin;
-    }
+void Spin::next_state(bool flip) {
+    next_spin = energy_adjacent() < 0 ? 1 : -1;
+    next_spin = flip ? -next_spin : next_spin;
 }

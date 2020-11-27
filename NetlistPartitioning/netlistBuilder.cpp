@@ -91,7 +91,7 @@ bool line_contains_component(std::string line, std::string comp) {
 	return false;
 }
 
-void build_graph_from_netlist(std::string path, Spin* spins, int spin_count) {
+void build_graph_from_netlist(std::string path, Spin* spins, int spin_count, double A, double B) {
 	int net_count = get_net_count(path);
 	std::string names = get_names(path);
 	std::string nets = get_nets(path);
@@ -103,18 +103,18 @@ void build_graph_from_netlist(std::string path, Spin* spins, int spin_count) {
 
 	for (int i = 0; i < spin_count; i++) {							//For every spin...
 		double* weights = new double[spin_count];
-		set_array_const(weights, spin_count, 0);
+		set_array_const(weights, spin_count, A);
 		std::istringstream nets_stream(nets);
 		std::string line;
 		for (int j = 0; j < net_count; j++) {						//...check every net...
 			std::getline(nets_stream, line);
-			if (line_contains_component(line, spins[i].name)) {	//...if that net contains the spin...
+			if (line_contains_component(line, spins[i].name)) {		//...if that net contains the spin...
 				std::istringstream line_stream(line);
 				std::string token;
 				while (line_stream >> token) {						//...cycle through the net...
 					for (int k = 0; k < spin_count; k++) {
 						if (token == spins[k].name) {
-							weights[k] = 1;							//...and add weights for every connection.
+							weights[k] = -1*B + A;					//...and add weights for every connection.
 						}
 					}
 				}
