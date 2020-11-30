@@ -96,6 +96,8 @@ void build_graph_from_netlist(std::string path, Spin* spins, int spin_count, dou
 	std::string names = get_names(path);
 	std::string nets = get_nets(path);
 
+	//std::cout << nets;			//TEST PRINT
+
 	std::istringstream name_stream(names);
 	for (int i = 0; i < spin_count; i++) {
 		name_stream >> spins[i].name;
@@ -114,7 +116,7 @@ void build_graph_from_netlist(std::string path, Spin* spins, int spin_count, dou
 				while (line_stream >> token) {						//...cycle through the net...
 					for (int k = 0; k < spin_count; k++) {
 						if (token == spins[k].name) {
-							weights[k] = -1*B + A;					//...and add weights for every connection.
+							weights[k] = weights[k] + B;			//...and add weights for every connection.
 						}
 					}
 				}

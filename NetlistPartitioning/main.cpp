@@ -13,6 +13,14 @@ void clean_spins(Spin* spins, int spin_count) {
 	delete[] spins;
 }
 
+double get_energy(Spin* spins, int spin_count) {
+	double energy = 0;
+	for (int i = 0; i < spin_count; i++) {
+		energy += spins[i].energy_adjacent();
+	}
+	return energy;
+}
+
 void anneal(
 	Spin* spins,
 	int spin_count,
@@ -21,7 +29,9 @@ void anneal(
 	double stop_temp,
 	int steps_per_temp
 ) {
-	std::cout << "Goal temp: " << stop_temp << "\n";
+	int count = 0;
+	int cooling_steps = (int)(log(stop_temp/temperature)/log(1-cooling_speed));
+	std::cout << "[                              ]" << "\r" << "[";
 
 	while (temperature > stop_temp) {
 		for (int i = 0; i < steps_per_temp; i++) {
@@ -31,35 +41,47 @@ void anneal(
 			}
 		}
 		temperature *= (1 - cooling_speed);
-		std::cout << "Current temp: " << temperature << "\r";
+		count++;
+		if (count > cooling_steps / 30 - 1) {
+			count = 0;
+			std::cout << ".";
+		}
 	}
-	std::cout << "\n";
+	std::cout << "\n\n";
 }
 
 int main() {
-	std::string path = "C:\\Users\\Alexander Oxklint\\Documents\\KiCAD\\EKG\\EKG.net";
+	std::string path = "C:\\Users\\Alexander Oxklint\\Documents\\KiCAD\\EKG\\EKGIsing.net";
+	//std::string path = "C:\\Users\\Alexander Oxklint\\Documents\\KiCAD\\ST_Testboard\\ST_TestboardIsing.net";
 	int spin_count = get_component_count(path);
 	Spin* spins = new Spin[spin_count];
 
-	double temperature = 0.8;
-	double cooling_speed = 0.01;
+	double temperature = 0.9;
+	double cooling_speed = 0.0001;
 	double stop_temp = 0.001;
-	int steps_per_temp = 10;
+	int steps_per_temp = 50;
+	double A = 1;
+	double B = -1;
 
-	build_graph_from_netlist(path, spins, spin_count, 1, 2);
+	build_graph_from_netlist(path, spins, spin_count, A, B);
 	anneal(spins, spin_count, temperature, cooling_speed, stop_temp, steps_per_temp);
 	
+	int p_spin_count = 0;
 	for (int i = 0; i < spin_count; i++) {
-		std::cout << spins[i].name + " " << spins[i].spin << "\n";
+		std::cout << spins[i].name + "\t" << spins[i].spin << "\n";
+		if (spins[i].spin == 1) {
+			p_spin_count++;
+		}
 	}
+
+	std::cout << "\n" << "Energy: " << get_energy(spins, spin_count) << "\n";
+	std::cout << "+ spins: " << p_spin_count << "\n" << "- spins: " << spin_count - p_spin_count << "\n";
 
 	/*//TEST CODE - PRINTS COMPONENT AND CONNECTED COMPONENTS
 	for (int i = 0; i < spin_count; i++) {
 		std::cout << spins[i].name + "\n";
 		for (int j = 0; j < spins[i].neighbours; j++) {
-			if (spins[i].weights[j]) {
-				std::cout << spins[i].adjacent[j].name + " ";
-			}
+			std::cout << spins[i].adjacent[j].name << " " << spins[i].weights[j] << " ";
 		}
 
 		std::cout << "\n\n";

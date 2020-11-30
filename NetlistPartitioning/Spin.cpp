@@ -23,7 +23,7 @@ void Spin::randomize() {
 double Spin::energy_adjacent() {
     double total = 0;
     for (int i = 0; i < neighbours; i++) {
-        total += adjacent[i].spin * weights[i];
+        total += spin * adjacent[i].spin * weights[i];
     }
     return total;
 }
@@ -33,6 +33,8 @@ void Spin::flip() {
 }
 
 void Spin::next_state(bool flip) {
-    next_spin = energy_adjacent() < 0 ? 1 : -1;
-    next_spin = flip ? -next_spin : next_spin;
+    next_spin = energy_adjacent() < 0 ? spin : -spin;
+    if (next_spin == spin) {
+        next_spin = flip ? -next_spin : next_spin;
+    }
 }
