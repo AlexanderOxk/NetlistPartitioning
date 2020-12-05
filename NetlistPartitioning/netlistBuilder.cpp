@@ -129,6 +129,7 @@ void build_graph_from_netlist(std::string path, Spin* spins, int spin_count, dou
 				}
 			}
 		}
+		weights[i] = 0;
 		spins[i].add_to_graph(weights, spins, spin_count);
 	}
 }
@@ -178,6 +179,7 @@ void build_subgraphs(
 				}
 			}
 		}
+		p_weights[i] = 0;
 		p_spins[i].add_to_graph(p_weights, p_spins, p_spin_count);
 	}
 
@@ -200,6 +202,7 @@ void build_subgraphs(
 				}
 			}
 		}
+		n_weights[i] = 0;
 		n_spins[i].add_to_graph(n_weights, n_spins, n_spin_count);
 	}
 }

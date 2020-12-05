@@ -33,8 +33,8 @@ void Spin::flip() {
 }
 
 void Spin::next_state(bool flip) {
-    next_spin = energy_adjacent() < 0 ? spin : -spin;
-    if (next_spin == spin) {
+    next_spin = energy_adjacent() < 0 && !flip ? spin : -spin;
+    /*if (next_spin == spin) {
         next_spin = flip ? -next_spin : next_spin;
-    }
+    }*/
 }
