@@ -71,7 +71,7 @@ std::string get_nets(std::string path) {
 	return nets;
 }
 
-void set_array_const(double* array, int size, double c) {
+void set_array_const(int* array, int size, int c) {
 	for (int i = 0; i < size; i++) {
 		array[i] = c;
 	}
@@ -100,7 +100,7 @@ bool spin_exists(Spin* spins, int spin_count, std::string name) {
 	return false;
 }
 
-void build_graph_from_netlist(std::string path, Spin* spins, int spin_count, double A, double B) {
+void build_graph_from_netlist(std::string path, Spin* spins, int spin_count, int A, int B) {
 	int net_count = get_net_count(path);
 	std::string names = get_names(path);
 	std::string nets = get_nets(path);
@@ -111,7 +111,7 @@ void build_graph_from_netlist(std::string path, Spin* spins, int spin_count, dou
 	}
 
 	for (int i = 0; i < spin_count; i++) {							//For every spin...
-		double* weights = new double[spin_count];
+		int* weights = new int[spin_count];
 		set_array_const(weights, spin_count, A);
 		std::istringstream nets_stream(nets);
 		std::string line;
@@ -138,8 +138,8 @@ void build_subgraphs(
 	std::string path,
 	Spin* spins,
 	int spin_count,
-	double A,
-	double B,
+	int A,
+	int B,
 	Spin* p_spins,
 	Spin* n_spins,
 	int p_spin_count,
@@ -161,7 +161,7 @@ void build_subgraphs(
 	}
 
 	for (int i = 0; i < p_spin_count; i++) {						//For every spin...
-		double* p_weights = new double[p_spin_count];
+		int* p_weights = new int[p_spin_count];
 		set_array_const(p_weights, p_spin_count, A);
 		std::istringstream nets_stream(nets);
 		std::string line;
@@ -184,7 +184,7 @@ void build_subgraphs(
 	}
 
 	for (int i = 0; i < n_spin_count; i++) {						//For every spin...
-		double* n_weights = new double[n_spin_count];
+		int* n_weights = new int[n_spin_count];
 		set_array_const(n_weights, n_spin_count, A);
 		std::istringstream nets_stream(nets);
 		std::string line;

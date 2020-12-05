@@ -98,11 +98,11 @@ int main() {
 	Spin* spins = new Spin[spin_count];
 
 	double temperature = 0.99;
-	double cooling_speed = 0.1;
-	double stop_temp = 0.001;
+	double cooling_speed = 0.0005;
+	double stop_temp = 0.0001;
 	int steps_per_temp = 300;
-	double A = 1;
-	double B = -2;
+	int A = 1;
+	int B = -2;
 	int seed = 1;
 
 	build_graph_from_netlist(path, spins, spin_count, A, B);
